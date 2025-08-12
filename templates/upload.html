@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Upload Images{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Upload Images</h2>
+
+<div class="text-center mb-3">
+  <strong class="text-muted">Hi, {{ name }}</strong>
+</div>
+
+<div class="card shadow-sm p-4">
+  <div class="mb-3">
+    <label for="newFolder" class="form-label">Create New Folder</label>
+    <input type="text" id="newFolder" class="form-control" placeholder="Enter folder name">
+    <button class="btn btn-secondary mt-2" onclick="createFolder()">Create Folder</button>
+  </div>
+
+  <div class="mb-3">
+    <label for="folderSelect" class="form-label">Select Existing Folder</label>
+    <select id="folderSelect" class="form-select" required>
+      <option value="" selected disabled>-- Select Folder --</option>
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label for="photo" class="form-label">Select Images</label>
+    <input type="file" id="photo" class="form-control" accept="image/*" multiple>
+  </div>
+
+  <button class="btn btn-primary w-100" onclick="upload()">Upload</button>
+
+  <div id="response" class="mt-4"></div>
+</div>
+
+<script>
+  function createFolder() {
+    const folderName = document.getElementById("newFolder").value;
+    if (!folderName) {
+      alert("Enter a folder name");
+      return;
+    }
+
+    fetch('/create_folder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ folderName })
+    })
+    .then(res => res.json())
+    .then(data => {
+      alert(data.message || data.error);
+      document.getElementById("newFolder").value = '';
+      loadFolders();
+    });
+  }
+
+  function loadFolders() {
+    fetch('/list_folders')
+      .then(res => res.json())
+      .then(folders => {
+        const select = document.getElementById("folderSelect");
+        select.innerHTML = '<option value="" selected disabled>-- Select Folder --</option>';
+        folders.forEach(f => {
+          const option = document.createElement('option');
+          option.value = f;
+          option.textContent = f;
+          select.appendChild(option);
+        });
+      });
+  }
+
+  function upload() {
+    const filesInput = document.getElementById("photo");
+    const files = filesInput.files;
+    const folder = document.getElementById("folderSelect").value;
+
+    if (!folder) {
+      alert("Please select a folder first");
+      return;
+    }
+
+    if (files.length === 0) {
+      alert("Please select at least one image to upload.");
+      return;
+    }
+
+    const formData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+      formData.append('files', files[i]);
+    }
+    formData.append('folder', folder);
+
+    fetch('/upload', {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      const resBox = document.getElementById("response");
+      if (data.urls) {
+        resBox.innerHTML = data.urls.map(url =>
+          `<img src="${url}" alt="Uploaded image" class="img-thumbnail me-2 mb-2" style="max-width: 150px;">`
+        ).join('');
+        filesInput.value = '';
+      } else {
+        resBox.innerHTML = `<p class="text-danger">${data.error}</p>`;
+      }
+    });
+  }
+
+  window.onload = loadFolders;
+</script>
+{% endblock %}

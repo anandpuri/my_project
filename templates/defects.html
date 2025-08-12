@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Defect Entry{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Enter Daily Defect Record</h2>
+{% if success %}
+<div class="alert alert-success">{{ success }}</div>
+{% endif %}
+<form method="POST" class="card p-4 shadow-sm">
+  <div class="mb-3">
+    <label class="form-label">Defect Stage</label>
+    <input name="stage" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Defect Description</label>
+    <input name="description" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Defect Quantity</label>
+    <input name="qty" type="number" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">FG Part No.</label>
+    <input name="fg_part" class="form-control">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Project</label>
+    <input name="project" class="form-control">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Line</label>
+    <input name="line" class="form-control">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Supplier/Process</label>
+    <input name="supplier" class="form-control">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Operator Name</label>
+    <input name="operator" class="form-control">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Inspector Code</label>
+    <input name="inspector" class="form-control">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Production Quantity</label>
+    <input name="production_qty" type="number" class="form-control">
+  </div>
+  <button class="btn btn-primary w-100">Submit</button>
+</form>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h2 class="text-center">Welcome, {{ name }}</h2>
+
+<div class="row mt-4 text-center">
+  <div class="col-md-6 mb-3">
+    <a href="/defects" class="btn btn-primary w-100 p-3">📋 Daily Defect Entry</a>
+  </div>
+  <div class="col-md-6 mb-3">
+    <a href="/logout" class="btn btn-danger w-100 p-3">🚪 Logout</a>
+  </div>
+</div>
+{% endblock %}

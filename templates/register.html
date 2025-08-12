@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">User Registration</h2>
+{% if error %}
+<div class="alert alert-danger text-center">{{ error }}</div>
+{% endif %}
+
+<form method="POST" class="card p-4 shadow-sm" autocomplete="off">
+  <div class="mb-3">
+    <label class="form-label">Employee Code</label>
+    <input name="emp_code" id="emp_code" class="form-control" required>
+    <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="fetchEmployee()">Fetch Details</button>
+  </div>
+
+  <div id="employee-details" style="display:none;">
+    <div class="mb-3">
+      <label class="form-label">Name</label>
+      <input name="name" id="name" class="form-control" readonly>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Department</label>
+      <input name="department" id="department" class="form-control" readonly>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Designation</label>
+      <input name="designation" id="designation" class="form-control" readonly>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Username</label>
+      <input name="username" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Password</label>
+      <input type="password" name="password" id="password" class="form-control" required
+             pattern="^(?=.*[A-Z])(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$"
+             title="Password must contain at least 1 capital letter, 1 special character, letters, numbers and be at least 8 characters long.">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Confirm Password</label>
+      <div class="input-group">
+        <input type="password" name="confirm" id="confirm" class="form-control" required>
+        <span class="input-group-text" id="match-icon"></span>
+      </div>
+    </div>
+    <button class="btn btn-success w-100">Register</button>
+  </div>
+</form>
+
+<p class="text-center mt-3">
+  Already registered? <a href="/login">Login here</a>
+</p>
+
+<!-- JS for Password Match and Fetch -->
+<script>
+  function fetchEmployee() {
+    const empCode = document.getElementById("emp_code").value.trim();
+    if (empCode === "") {
+      alert("Please enter Employee Code");
+      return;
+    }
+
+    fetch(`/get_user_details?emp_code=${empCode}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById("name").value = data.name;
+          document.getElementById("department").value = data.department;
+          document.getElementById("designation").value = data.designation;
+          document.getElementById("employee-details").style.display = "block";
+        } else {
+          alert("Employee code not found.");
+          document.getElementById("employee-details").style.display = "none";
+        }
+      })
+      .catch(err => {
+        alert("Error fetching data.");
+      });
+  }
+
+  // Password match checker
+  const password = document.getElementById("password");
+  const confirm = document.getElementById("confirm");
+  const icon = document.getElementById("match-icon");
+
+  confirm.addEventListener("input", () => {
+    if (confirm.value === password.value && confirm.value !== "") {
+      icon.textContent = "✅";
+      icon.classList.remove("bg-danger");
+      icon.classList.add("bg-success");
+    } else {
+      icon.textContent = "❌";
+      icon.classList.remove("bg-success");
+      icon.classList.add("bg-danger");
+    }
+  });
+</script>
+{% endblock %}
